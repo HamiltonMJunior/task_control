@@ -1,0 +1,60 @@
+[project]
+name = "task-control"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Hamilton",email = "hamiltonquantum@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi[standard] (>=0.121.1,<0.122.0)",
+    "sqlalchemy (>=2.0.44,<3.0.0)",
+    "pymysql (>=1.1.2,<2.0.0)",
+    "pydantic-settings (>=2.12.0,<3.0.0)",
+    "cryptography (>=46.0.3,<47.0.0)",
+]
+
+[tool.poetry]
+packages = [{include = "task_control", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.4,<0.15.0)",
+    "taskipy (>=1.14.1,<2.0.0)",
+    "pytest (>=9.0.1,<10.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)"
+]
+pytest = [
+    "pytest-cov (>=7.0.0,<8.0.0)"
+]
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I','F','E','W','PL','PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single' 
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '-p no:warnings'
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+pre_format = 'ruff check --fix'
+format = 'ruff format'
+run  = 'fastapi dev src/task_control/back_end/app.py'
+pre_test = 'task lint'
+test = 'pytest -s -x --cov=task_control -vv'
+post_test = 'coverage html'
